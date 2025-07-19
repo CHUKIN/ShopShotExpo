@@ -13,11 +13,12 @@ This document provides default rules and best practices for using GitHub Copilot
 - **Leverage community libraries** that are actively maintained and compatible with React Native (e.g., `react-navigation`, `expo-image-picker`).
 - **Always validate user input** and handle errors gracefully.
 - **Use StyleSheet for styles** instead of inline styles for better performance.
-- **Test on both iOS and Android** to ensure cross-platform compatibility.
+- **Test on iOS only** to ensure iOS compatibility.
 
 ## File and Folder Structure
 
-- Place screens in the `app/` directory.
+- Place screens in the `app/` directory (for projects using Expo Router).
+- For projects using other navigation setups (e.g., React Navigation), organize screens in a `screens/` directory or a structure that aligns with your navigation configuration.
 - Place reusable components in the `components/` directory.
 - Place utility functions in the `utils/` directory.
 - Place services (API, storage, etc.) in the `services/` directory.
@@ -30,7 +31,7 @@ This document provides default rules and best practices for using GitHub Copilot
 - Use camelCase for variables and functions.
 - Keep components small and focused.
 - Prefer destructuring props and state.
-- Use `export default` for screens, and named exports for reusable components.
+- Use named exports for all components, including screens, to improve tree-shaking and refactoring capabilities.
 - Document complex logic with comments and JSDoc.
 
 ## Dependency Management
