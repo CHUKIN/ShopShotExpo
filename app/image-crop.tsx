@@ -39,10 +39,10 @@ export default function ImageCropScreen() {
   const { imageUri } = useLocalSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cropArea, setCropArea] = useState<CropArea>({
-    x: 0.1,
-    y: 0.1,
-    width: 0.8,
-    height: 0.8,
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 200,
   });
 
   const handleCrop = async () => {
@@ -57,6 +57,7 @@ export default function ImageCropScreen() {
       const originalImageUri = imageUri as string;
       
       // Apply the crop area selected by user
+      // react-easy-crop provides pixel coordinates directly
       const croppedImage = await manipulateAsync(
         originalImageUri,
         [
