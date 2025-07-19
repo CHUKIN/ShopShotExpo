@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Control, Controller, FieldError, RegisterOptions } from 'react-hook-form';
 
 interface CustomInputProps {

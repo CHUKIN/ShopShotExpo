@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, Alert } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { uploadToBackend, UploadData } from '../services/uploadService';
 import { ImagePreview } from '../components/ImagePreview';
 import { UploadForm } from '../components/UploadForm';
+import { showSuccessToast, showErrorToast } from '../utils/toastUtils';
 
 interface FormData {
   title: string;
@@ -34,7 +35,7 @@ export default function UploadFormScreen() {
 
   const onSubmit = async (data: FormData) => {
     if (!imageUri || typeof imageUri !== 'string') {
-      Alert.alert('Error', 'No image selected');
+      showErrorToast('No image selected');
       return;
     }
 
@@ -49,17 +50,14 @@ export default function UploadFormScreen() {
       const result = await uploadToBackend(uploadData);
       
       if (result.success) {
-        Alert.alert('Success', result.message, [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/'),
-          },
-        ]);
+        showSuccessToast(result.message, () => {
+          router.replace('/');
+        });
       } else {
-        Alert.alert('Error', 'Upload failed. Please try again.');
+        showErrorToast('Upload failed. Please try again.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Network error. Please try again.');
+      showErrorToast('Network error. Please try again.');
       console.error('Upload error:', error);
     } finally {
       setIsUploading(false);

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { FloatingActionButton } from "../components/FloatingActionButton";
 import { 
@@ -8,6 +8,7 @@ import {
   takePhotoFromCamera, 
   pickImageFromGallery 
 } from "../utils/imageUtils";
+import { showErrorToast } from "../utils/toastUtils";
 
 export default function Index() {
   const router = useRouter();
@@ -27,12 +28,12 @@ export default function Index() {
       if (choice === 'camera') {
         result = await takePhotoFromCamera();
         if (!result) {
-          Alert.alert('Permission Denied', 'Camera permission is required to take photos');
+          showErrorToast('Camera permission is required to take photos');
         }
       } else if (choice === 'gallery') {
         result = await pickImageFromGallery();
         if (!result) {
-          Alert.alert('Permission Denied', 'Photo library permission is required to select images');
+          showErrorToast('Photo library permission is required to select images');
         }
       }
 
@@ -47,7 +48,7 @@ export default function Index() {
         });
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to process image');
+      showErrorToast('Failed to process image');
       console.error('Image selection error:', error);
     } finally {
       setLoading(false);

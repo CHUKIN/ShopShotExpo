@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, Alert } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Image } from 'expo-image';
 import { CustomButton } from '../components/CustomButton';
+import { showErrorToast } from '../utils/toastUtils';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -14,7 +15,7 @@ export default function ImageCropScreen() {
 
   const handleCrop = async () => {
     if (!imageUri || typeof imageUri !== 'string') {
-      Alert.alert('Error', 'No image to crop');
+      showErrorToast('No image to crop');
       return;
     }
 
@@ -41,7 +42,7 @@ export default function ImageCropScreen() {
         }
       });
     } catch (error) {
-      Alert.alert('Error', 'Failed to process image');
+      showErrorToast('Failed to process image');
       console.error('Crop error:', error);
     } finally {
       setIsProcessing(false);
