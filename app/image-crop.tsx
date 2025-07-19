@@ -4,9 +4,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Image } from 'expo-image';
 import { CustomButton } from '../components/CustomButton';
+import { validateImageUri } from '../utils/validationUtils';
 import { showErrorToast } from '../utils/toastUtils';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Image sizing constants
+const IMAGE_WIDTH_RATIO = 0.8;
+const IMAGE_HEIGHT_RATIO = 0.6;
 
 export default function ImageCropScreen() {
   const router = useRouter();
@@ -14,7 +19,7 @@ export default function ImageCropScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleCrop = async () => {
-    if (!imageUri || typeof imageUri !== 'string') {
+    if (!validateImageUri(imageUri)) {
       showErrorToast('No image to crop');
       return;
     }
@@ -23,7 +28,7 @@ export default function ImageCropScreen() {
     try {
       // For now, we'll just resize the image to fit screen dimensions
       // In a real implementation, you'd add crop area selection UI
-      const maxDimension = Math.min(screenWidth * 0.8, screenHeight * 0.6);
+      const maxDimension = Math.min(screenWidth * IMAGE_WIDTH_RATIO, screenHeight * IMAGE_HEIGHT_RATIO);
       
       const croppedImage = await manipulateAsync(
         imageUri,

@@ -39,7 +39,10 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   return (
     <FormControl isInvalid={!!error} mb="$4">
       <FormControlLabel>
-        <FormControlLabelText color={required ? '$red600' : '$black'}>
+        <FormControlLabelText 
+          color={required ? '$red600' : '$black'} 
+          fontWeight={required ? 'bold' : 'normal'}
+        >
           {label}{required && ' *'}
         </FormControlLabelText>
       </FormControlLabel>
