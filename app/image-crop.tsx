@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { ImageCropView } from '../components/ImageCropView';
 import { validateImageUri } from '../utils/validationUtils';
 import { showErrorToast } from '../utils/toastUtils';
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface CropArea {
   x: number;
