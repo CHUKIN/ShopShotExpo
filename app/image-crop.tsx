@@ -2,21 +2,30 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { Image } from 'expo-image';
 import { CustomButton } from '../components/CustomButton';
+import { ImageCropView } from '../components/ImageCropView';
 import { validateImageUri } from '../utils/validationUtils';
 import { showErrorToast } from '../utils/toastUtils';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-// Image sizing constants
-const IMAGE_WIDTH_RATIO = 0.8;
-const IMAGE_HEIGHT_RATIO = 0.6;
+interface CropArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 export default function ImageCropScreen() {
   const router = useRouter();
   const { imageUri } = useLocalSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cropArea, setCropArea] = useState<CropArea>({
+    x: 0.1,
+    y: 0.1,
+    width: 0.8,
+    height: 0.8,
+  });
 
   const handleCrop = async () => {
     if (!validateImageUri(imageUri)) {
@@ -26,19 +35,26 @@ export default function ImageCropScreen() {
 
     setIsProcessing(true);
     try {
-      // For now, we'll just resize the image to fit screen dimensions
-      // In a real implementation, you'd add crop area selection UI
-      const maxDimension = Math.min(screenWidth * IMAGE_WIDTH_RATIO, screenHeight * IMAGE_HEIGHT_RATIO);
+      // Get original image dimensions
+      const originalImageUri = imageUri as string;
       
+      // Apply the crop area selected by user
       const croppedImage = await manipulateAsync(
-        imageUri,
+        originalImageUri,
         [
-          { resize: { width: maxDimension } }
+          {
+            crop: {
+              originX: cropArea.x,
+              originY: cropArea.y,
+              width: cropArea.width,
+              height: cropArea.height,
+            }
+          }
         ],
         { compress: 0.8, format: SaveFormat.JPEG }
       );
 
-      router.push({
+      router.replace({
         pathname: '/upload-form',
         params: { 
           imageUri: croppedImage.uri,
@@ -58,17 +74,16 @@ export default function ImageCropScreen() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         {imageUri && (
-          <Image
-            source={{ uri: imageUri as string }}
-            style={styles.image}
-            contentFit="contain"
+          <ImageCropView
+            imageUri={imageUri as string}
+            onCropAreaChange={setCropArea}
           />
         )}
       </View>
       
       <View style={styles.buttonContainer}>
         <CustomButton
-          title="Next"
+          title="Crop & Continue"
           onPress={handleCrop}
           loading={isProcessing}
         />
@@ -84,14 +99,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
   },
   buttonContainer: {
     padding: 16,
