@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ImageCropView } from '../components/ImageCropView';
-import { validateImageUri } from '../utils/validationUtils';
 import { showErrorToast } from '../utils/toastUtils';
+import { validateImageUri } from '../utils/validationUtils';
 
 interface CropArea {
   x: number;
@@ -57,7 +57,7 @@ export default function ImageCropScreen() {
       const originalImageUri = imageUri as string;
       
       // Apply the crop area selected by user
-      // react-easy-crop provides pixel coordinates directly
+      // Our custom ImageCropView provides pixel coordinates directly
       const croppedImage = await manipulateAsync(
         originalImageUri,
         [
