@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { CustomButton } from '../components/CustomButton';
 import { ImageCropView } from '../components/ImageCropView';
 import { validateImageUri } from '../utils/validationUtils';
 import { showErrorToast } from '../utils/toastUtils';
@@ -15,6 +14,27 @@ interface CropArea {
   width: number;
   height: number;
 }
+
+// Simple button component to avoid gluestack UI issues
+const SimpleButton: React.FC<{
+  title: string;
+  onPress: () => void;
+  loading?: boolean;
+  disabled?: boolean;
+}> = ({ title, onPress, loading = false, disabled = false }) => (
+  <TouchableOpacity
+    style={[
+      styles.button,
+      (disabled || loading) && styles.buttonDisabled
+    ]}
+    onPress={onPress}
+    disabled={disabled || loading}
+  >
+    <Text style={styles.buttonText}>
+      {loading ? 'Processing...' : title}
+    </Text>
+  </TouchableOpacity>
+);
 
 export default function ImageCropScreen() {
   const router = useRouter();
@@ -82,7 +102,7 @@ export default function ImageCropScreen() {
       </View>
       
       <View style={styles.buttonContainer}>
-        <CustomButton
+        <SimpleButton
           title="Crop & Continue"
           onPress={handleCrop}
           loading={isProcessing}
@@ -103,5 +123,19 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 16,
     paddingBottom: 32,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
