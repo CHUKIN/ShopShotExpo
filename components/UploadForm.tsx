@@ -1,5 +1,5 @@
 import React from 'react';
-import { VStack } from '@gluestack-ui/themed';
+import { View, StyleSheet } from 'react-native';
 import { Control, FieldErrors } from 'react-hook-form';
 import { CustomInput } from './CustomInput';
 import { CustomButton } from './CustomButton';
@@ -23,7 +23,7 @@ export const UploadForm: React.FC<UploadFormProps> = ({
   isLoading,
 }) => {
   return (
-    <VStack flex={1} space="md">
+    <View style={styles.container}>
       <CustomInput
         name="title"
         control={control}
@@ -55,6 +55,12 @@ export const UploadForm: React.FC<UploadFormProps> = ({
         onPress={onSubmit}
         loading={isLoading}
       />
-    </VStack>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

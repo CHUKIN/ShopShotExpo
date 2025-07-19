@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { Image } from 'expo-image';
-import { CustomButton } from '../components/CustomButton';
-import { validateImageUri } from '../utils/validationUtils';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageCropView } from '../components/ImageCropView';
 import { showErrorToast } from '../utils/toastUtils';
+import { validateImageUri } from '../utils/validationUtils';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+interface CropArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
-// Image sizing constants
-const IMAGE_WIDTH_RATIO = 0.8;
-const IMAGE_HEIGHT_RATIO = 0.6;
+// Simple button component to avoid gluestack UI issues
+const SimpleButton: React.FC<{
+  title: string;
+  onPress: () => void;
+  loading?: boolean;
+  disabled?: boolean;
+}> = ({ title, onPress, loading = false, disabled = false }) => (
+  <TouchableOpacity
+    style={[
+      styles.button,
+      (disabled || loading) && styles.buttonDisabled
+    ]}
+    onPress={onPress}
+    disabled={disabled || loading}
+  >
+    <Text style={styles.buttonText}>
+      {loading ? 'Processing...' : title}
+    </Text>
+  </TouchableOpacity>
+);
 
 export default function ImageCropScreen() {
   const router = useRouter();
   const { imageUri } = useLocalSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cropArea, setCropArea] = useState<CropArea>({
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 200,
+  });
 
   const handleCrop = async () => {
     if (!validateImageUri(imageUri)) {
@@ -26,19 +53,27 @@ export default function ImageCropScreen() {
 
     setIsProcessing(true);
     try {
-      // For now, we'll just resize the image to fit screen dimensions
-      // In a real implementation, you'd add crop area selection UI
-      const maxDimension = Math.min(screenWidth * IMAGE_WIDTH_RATIO, screenHeight * IMAGE_HEIGHT_RATIO);
+      // Get original image dimensions
+      const originalImageUri = imageUri as string;
       
+      // Apply the crop area selected by user
+      // Our custom ImageCropView provides pixel coordinates directly
       const croppedImage = await manipulateAsync(
-        imageUri,
+        originalImageUri,
         [
-          { resize: { width: maxDimension } }
+          {
+            crop: {
+              originX: cropArea.x,
+              originY: cropArea.y,
+              width: cropArea.width,
+              height: cropArea.height,
+            }
+          }
         ],
         { compress: 0.8, format: SaveFormat.JPEG }
       );
 
-      router.push({
+      router.replace({
         pathname: '/upload-form',
         params: { 
           imageUri: croppedImage.uri,
@@ -58,17 +93,16 @@ export default function ImageCropScreen() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         {imageUri && (
-          <Image
-            source={{ uri: imageUri as string }}
-            style={styles.image}
-            contentFit="contain"
+          <ImageCropView
+            imageUri={imageUri as string}
+            onCropAreaChange={setCropArea}
           />
         )}
       </View>
       
       <View style={styles.buttonContainer}>
-        <CustomButton
-          title="Next"
+        <SimpleButton
+          title="Crop & Continue"
           onPress={handleCrop}
           loading={isProcessing}
         />
@@ -84,17 +118,23 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
   },
   buttonContainer: {
     padding: 16,
     paddingBottom: 32,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
