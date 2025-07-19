@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { VStack } from '@gluestack-ui/themed';
 import { Control, FieldErrors } from 'react-hook-form';
 import { CustomInput } from './CustomInput';
 import { CustomButton } from './CustomButton';
@@ -23,7 +23,7 @@ export const UploadForm: React.FC<UploadFormProps> = ({
   isLoading,
 }) => {
   return (
-    <View style={styles.container}>
+    <VStack flex={1} space="md">
       <CustomInput
         name="title"
         control={control}
@@ -31,6 +31,13 @@ export const UploadForm: React.FC<UploadFormProps> = ({
         placeholder="Enter a title for your photo"
         required
         error={errors.title}
+        rules={{
+          required: 'Title is required',
+          minLength: {
+            value: 1,
+            message: 'Title cannot be empty',
+          },
+        }}
       />
 
       <CustomInput
@@ -48,12 +55,6 @@ export const UploadForm: React.FC<UploadFormProps> = ({
         onPress={onSubmit}
         loading={isLoading}
       />
-    </View>
+    </VStack>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

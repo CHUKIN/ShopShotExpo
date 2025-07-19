@@ -22,15 +22,6 @@ export default function UploadFormScreen() {
       title: '',
       description: '',
     },
-    rules: {
-      title: {
-        required: 'Title is required',
-        minLength: {
-          value: 1,
-          message: 'Title cannot be empty',
-        },
-      },
-    },
   });
 
   const onSubmit = async (data: FormData) => {

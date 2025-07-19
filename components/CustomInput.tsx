@@ -1,5 +1,15 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { 
+  FormControl, 
+  FormControlLabel, 
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  Input,
+  InputField,
+  Textarea,
+  TextareaInput
+} from '@gluestack-ui/themed';
 import { Control, Controller, FieldError, RegisterOptions } from 'react-hook-form';
 
 interface CustomInputProps {
@@ -21,80 +31,51 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   placeholder,
   required = false,
   multiline = false,
-  numberOfLines = 1,
   error,
   rules,
 }) => {
   const validationRules = rules || (required ? { required: `${label} is required` } : {});
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.label, required && styles.requiredLabel]}>
-        {label}{required && ' *'}
-      </Text>
+    <FormControl isInvalid={!!error} mb="$4">
+      <FormControlLabel>
+        <FormControlLabelText color={required ? '$red600' : '$black'}>
+          {label}{required && ' *'}
+        </FormControlLabelText>
+      </FormControlLabel>
       
       <Controller
         control={control}
         name={name}
         rules={validationRules}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={[
-              styles.input,
-              multiline && styles.multilineInput,
-              error && styles.errorInput,
-            ]}
-            placeholder={placeholder}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            multiline={multiline}
-            numberOfLines={multiline ? numberOfLines : 1}
-            textAlignVertical={multiline ? 'top' : 'center'}
-          />
+          multiline ? (
+            <Textarea>
+              <TextareaInput
+                placeholder={placeholder}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            </Textarea>
+          ) : (
+            <Input>
+              <InputField
+                placeholder={placeholder}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            </Input>
+          )
         )}
       />
       
       {error && (
-        <Text style={styles.errorText}>{error.message}</Text>
+        <FormControlError>
+          <FormControlErrorText>{error.message}</FormControlErrorText>
+        </FormControlError>
       )}
-    </View>
+    </FormControl>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#333',
-  },
-  requiredLabel: {
-    color: '#d32f2f',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    minHeight: 48,
-  },
-  multilineInput: {
-    minHeight: 96,
-    paddingTop: 12,
-  },
-  errorInput: {
-    borderColor: '#d32f2f',
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#d32f2f',
-    marginTop: 4,
-  },
-});
