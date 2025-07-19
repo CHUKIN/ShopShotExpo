@@ -17,7 +17,7 @@ This document provides default rules and best practices for using GitHub Copilot
 
 ## File and Folder Structure
 
-- Place screens in the `app/` directory (for projects using Expo Router).
+- Place screens in the `app/` directory (for projects using Expo Router), which uses file-based routing where the file structure in `app/` determines the navigation structure.
 - For projects using other navigation setups (e.g., React Navigation), organize screens in a `screens/` directory or a structure that aligns with your navigation configuration.
 - Place reusable components in the `components/` directory.
 - Place utility functions in the `utils/` directory.
